@@ -15,7 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.springframework.test.util.ReflectionTestUtils;
 
-public class BookRepositoryTests {
+class BookRepositoryTests {
     private BookRepository bookRepository;
 
     @BeforeEach
@@ -31,27 +31,34 @@ public class BookRepositoryTests {
 
     @Test
     void addBookTest() throws CapacityException {
+        //given
         String title = "Test book title";
         String author ="No Idea";
         Book book = new Book(title, author);
-
+        //when
         Book addedBook = bookRepository.addBook(book);
-        assertThat(addedBook.toString()).isEqualTo(book.toString());
+        //then
+        assertThat(addedBook).isEqualTo(book);
     }
 
     @Test
     void getBookByIdTest() throws NoBookException {
+        //given
         int id = 0;
+        //when
         Book book = bookRepository.findBookById(0);
+        //then
         assertThat(book.getTitle()).isNotNull().isEqualTo("Test book title");
     }
 
     @Test
     void deleteBook() throws NoBookException {
+        //given
         int id = 0;
         int size = bookRepository.findAll().size();
-
+        //when
         bookRepository.deleteBook(id);
+        //then
         assertThat(bookRepository.findAll().size()).isEqualTo(size-1);
     }
     @Test
@@ -85,6 +92,6 @@ public class BookRepositoryTests {
         Book book = new Book(title, author);
         bookRepository.addBook(book);
         bookRepository.deleteAllBooks();
-        assertThat(bookRepository.findAll().size()).isEqualTo(0);
+        assertThat(bookRepository.findAll().size()).isZero();
     }
 }

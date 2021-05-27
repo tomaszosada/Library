@@ -28,7 +28,7 @@ import static org.mockito.Mockito.*;
 //do throw when do wyjatkow
 
 @ExtendWith(MockitoExtension.class)
-public class BookServiceTests {
+class BookServiceTests {
     @Mock
     private BookRepository bookRepository;
     private BookService bookService;
@@ -44,7 +44,7 @@ public class BookServiceTests {
         Book book = new Book(title, author);
         when(bookRepository.addBook(any(Book.class))).then(returnsFirstArg());
         Book savedBook = bookService.addBook(book);
-        assertThat(savedBook.toString()).isEqualTo(book.toString());
+        assertThat(savedBook).isEqualTo(book);
     }
 
     @Test
@@ -56,18 +56,27 @@ public class BookServiceTests {
         assertThat(valueCapture.getValue()).isEqualTo(id);
     }
 
-m
+//    @Test
+//    void deleteWrongBookTest() throws NoBookException{
+//        int id= 1;
+//        String title = "Test title";
+//        String author = "Test author";
+//        Book book = new Book(title, author);
+//
+//        doThrow(new NoBookException("Book not found")).when(bookRepository).deleteBook(any(Integer.class));
+//
+//    }
     @Test
     void findBookByIdTest() throws NoBookException {
         int id = 0;
         Book book = new Book("Title", "Author");
         when(bookRepository.findBookById(any(Integer.class))).thenReturn(book);
         Book foundBook = bookService.findBookById(id);
-        assertThat(foundBook.toString()).isEqualTo(book.toString());
+        assertThat(foundBook).isEqualTo(book);
     }
 
     @Test()
-    void noBookfoundTest() throws NoBookException {
+    void noBookFoundTest() throws NoBookException {
         int id = 0;
         doThrow(new NoBookException("Book not found")).when(bookRepository).findBookById(any(Integer.class));
         Book foundBook = bookService.findBookById(id);
@@ -81,7 +90,7 @@ m
         books.put(1, new Book("title", "author"));
 
         when(bookRepository.findAll()).thenReturn(books);
-        HashMap<Integer, Book> foundBooks = bookService.findAll();
+        HashMap<Integer, Book> foundBooks = (HashMap<Integer, Book>) bookService.findAll();
         assertThat(foundBooks.size()).isEqualTo(books.size());
 
     }

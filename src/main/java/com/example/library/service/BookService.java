@@ -6,9 +6,10 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public interface BookService {
-    HashMap<Integer, Book> findAll();
+    Map<Integer, Book> findAll();
     Book addBook(Book book);
     void deleteBook(Integer id);
     Book findBookById(Integer id);

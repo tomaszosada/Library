@@ -27,9 +27,6 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 @SpringBootTest
 class LibraryApplicationTests {
 
-//	@Test
-//	void contextLoads() {
-//	}
 	@Autowired
 	BookService bookService;
 
