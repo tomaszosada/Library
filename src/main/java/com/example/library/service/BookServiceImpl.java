@@ -6,6 +6,7 @@ import com.example.library.model.Book;
 import com.example.library.repository.BookRepository;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -15,10 +16,11 @@ import java.util.Map;
 @Service
 public class BookServiceImpl implements BookService {
     private final BookRepository repository;
-
+    private int capacity;
     @Autowired
-    public BookServiceImpl(BookRepository bookRepository) {
+    public BookServiceImpl(BookRepository bookRepository, @Value("${capacity}") int capacity) {
         this.repository = bookRepository;
+        this.capacity = capacity;
     }
 
     @Override
@@ -28,30 +30,31 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public Book addBook(Book book) {
-        try {
-            return repository.addBook(book);
-        } catch (CapacityException e) {
-            log.error(e.toString());
-            return null;
-        }
+            if (repository.findAll().size() < capacity) {
+                return repository.addBook(book);
+            } else {
+                throw new CapacityException("Too many books");
+            }
+
+
     }
 
     @Override
-    public void deleteBook(Integer id) {
-        try {
+    public void deleteBook(int id) {
+        if(repository.findAll().containsKey(id)) {
             repository.deleteBook(id);
-        } catch (NoBookException e) {
-            log.error(e.toString());
+        } else {
+            throw new NoBookException("No book found!");
         }
+
     }
 
     @Override
-    public Book findBookById(Integer id) {
-        try {
+    public Book findBookById(int id) {
+        if(repository.findAll().containsKey(id)){
             return repository.findBookById(id);
-        } catch (NoBookException e) {
-            log.error(e.toString());
-            return null;
+        } else {
+            throw new NoBookException("No book found!");
         }
     }
 

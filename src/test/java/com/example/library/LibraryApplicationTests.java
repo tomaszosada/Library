@@ -37,12 +37,15 @@ class LibraryApplicationTests {
 	}
 	@Test
 	void add(){
-		bookService.addBook(new Book("Dont", "ello"));
-		bookService.addBook(new Book("Dont", "ello"));
-		bookService.addBook(new Book("Dont", "ello"));
-		bookService.addBook(new Book("Dont", "ello"));
+		//given
+		Book book1 = new Book("title1", "author1");
+		//when
+		bookService.addBook(book1);
+		//then
+		assertThat(bookService.findAll().size()).isEqualTo(1);
+		assertThat(bookService.findBookById(0)).isEqualTo(book1);
 
-		assertThat(bookService.findAll().size()).isEqualTo(3);
+
 //
 
 	}
@@ -60,18 +63,19 @@ class LibraryApplicationTests {
 		bookService.addBook(new Book(title, author));
 		int len = bookService.findAll().size();
 		assertThat(bookService.findAll().get(len-1).getTitle()).isEqualTo(title);
-		System.out.println(bookService.findAll());
 	}
 
 	//delete
 	@Test
 	void deleteTest() {
+		//given
 		Book book = new Book("Book", "ToDelete");
 		bookService.addBook(book);
 		int len = bookService.findAll().size();
 		int id = 0;
+		//when
 		bookService.deleteBook(id);
-
+		//then
 		assertThat(bookService.findAll().size()).isEqualTo(len-1);
 	}
 	//find by id
@@ -79,10 +83,13 @@ class LibraryApplicationTests {
 
 	@Test
 	void findByIdTest() {
+		//given
 		int id = 0;
 		Book book = new Book("title", "author");
 		bookService.addBook(book);
+		//when
 		Book foundBook = bookService.findBookById(id);
+		//then
 		assertThat(foundBook.getTitle()).isEqualTo("title");
 
 	}

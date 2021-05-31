@@ -21,7 +21,7 @@ class BookRepositoryTests {
     @BeforeEach
     public void setUp() throws CapacityException {
         bookRepository = new BookRepositoryImpl();
-        ReflectionTestUtils.setField(bookRepository, "capacity", 3);
+//        ReflectionTestUtils.setField(bookRepository, "capacity", 3);
         String title = "Test book title";
         String author ="No Idea";
         Book book = new Book(title, author);
@@ -42,7 +42,7 @@ class BookRepositoryTests {
     }
 
     @Test
-    void getBookByIdTest() throws NoBookException {
+    void getBookByIdTest() {
         //given
         int id = 0;
         //when
@@ -61,30 +61,7 @@ class BookRepositoryTests {
         //then
         assertThat(bookRepository.findAll().size()).isEqualTo(size-1);
     }
-    @Test
-    void capacityOverloadTest() {
-        assertThatThrownBy(() -> {
-            bookRepository.addBook(new Book("Third", "ThirdAuthor"));
-            bookRepository.addBook(new Book("Third", "ThirdAuthor"));
-            bookRepository.addBook(new Book("Third", "ThirdAuthor"));
 
-        }).isInstanceOf(CapacityException.class);
-    }
-    @Test
-    void wrongBookDeleteTest(){
-        int id = bookRepository.findAll().size() +1;
-        assertThatThrownBy(() -> {
-            bookRepository.deleteBook(id);
-        }).isInstanceOf(NoBookException.class);
-    }
-    @Test
-    void findWrongBookByIdTest(){
-        int id = bookRepository.findAll().size() +1;
-        assertThatThrownBy(() -> {
-            bookRepository.findBookById(id);
-        }).isInstanceOf(NoBookException.class);
-
-    }
     @Test
     void deleteAllBooksTest() throws CapacityException {
         String title = "Title";

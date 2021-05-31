@@ -11,7 +11,7 @@ import java.util.Map;
 public interface BookService {
     Map<Integer, Book> findAll();
     Book addBook(Book book);
-    void deleteBook(Integer id);
-    Book findBookById(Integer id);
+    void deleteBook(int id);
+    Book findBookById(int id);
     void deleteAllBooks();
 }

@@ -31,27 +31,20 @@ public class BookRepositoryImpl implements BookRepository {
     }
 
     @Override
-    public Book addBook(Book book) throws CapacityException {
+    public Book addBook(Book book){
             books.put(books.size(), book);
             return book;
     }
 
     @Override
-    public void deleteBook(int id) throws NoBookException {
-        if(books.containsKey(id)){
+    public void deleteBook(int id){
             books.remove(id);
-        } else {
-            throw new NoBookException("There's no book with that id");
-        }
     }
 
     @Override
-    public Book findBookById(int id) throws NoBookException {
-        if(books.containsKey(id)){
-            return books.get(id);
-        } else {
-            throw new NoBookException("There's no book with that id");
-        }
+    public Book findBookById(int id){
+        return books.get(id);
+
     }
 
     @Override

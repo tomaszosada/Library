@@ -1,9 +1,8 @@
 package com.example.library.model;
 
 import lombok.Data;
-
-public @Data
-class Book {
+@Data
+public class Book {
     private final String title;
     private final String author;
 
