@@ -19,8 +19,10 @@ public class BookServiceImpl implements BookService {
     private int capacity;
     @Autowired
     public BookServiceImpl(BookRepository bookRepository, @Value("${capacity}") int capacity) {
+        bookRepository.addBook(new Book("Title", "Author"));
         this.repository = bookRepository;
         this.capacity = capacity;
+
     }
 
     @Override

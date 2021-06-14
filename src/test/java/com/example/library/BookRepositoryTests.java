@@ -34,6 +34,7 @@ class BookRepositoryTests {
         //given
         String title = "Test book title";
         String author ="No Idea";
+
         Book book = new Book(title, author);
         //when
         Book addedBook = bookRepository.addBook(book);
