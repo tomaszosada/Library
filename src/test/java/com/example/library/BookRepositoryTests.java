@@ -15,6 +15,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.util.HashMap;
+import java.util.Map;
+
 class BookRepositoryTests {
     private BookRepository bookRepository;
 
@@ -25,8 +28,22 @@ class BookRepositoryTests {
         String title = "Test book title";
         String author ="No Idea";
         Book book = new Book(title, author);
-
         bookRepository.addBook(book);
+
+    }
+
+    @Test
+    void findBetween(){
+        //given
+        Book bookToAdd = new Book("title", "Author");
+        bookToAdd.setYear(2010);
+        bookRepository.addBook(bookToAdd);
+        int start = 1990;
+        int end = 2020;
+        //when
+        Map<Integer, Book> books = bookRepository.findBookBetweenYears(start, end);
+        assertThat(books.containsValue(bookToAdd));
+
     }
 
     @Test
