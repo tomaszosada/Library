@@ -29,10 +29,6 @@ public class BookController {
     @Autowired
     private ModelMapper modelMapper;
 
-    public BookController() {
-        bookService = new BookServiceImpl();
-    }
-
     @Autowired
     public BookController(BookService bookService) {
         this.bookService = bookService;

@@ -21,9 +21,6 @@ public class BookServiceImpl implements BookService {
     private final BookRepository repository;
     private int capacity;
 
-    public BookServiceImpl() {
-        repository = new BookRepositoryImpl();
-    }
 
     @Autowired
     public BookServiceImpl(BookRepository bookRepository, @Value("${capacity}") int capacity) {
