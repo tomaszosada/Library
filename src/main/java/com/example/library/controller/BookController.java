@@ -6,6 +6,7 @@ import com.example.library.exception.NoBookException;
 import com.example.library.model.Book;
 import com.example.library.model.BookDto;
 import com.example.library.service.BookService;
+import com.example.library.service.BookServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,11 +15,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
-//zmien na response entity
 //dopisz testy gdzie mockujesz repo a nie service
 @RestController
 public class BookController {
@@ -26,6 +28,10 @@ public class BookController {
 
     @Autowired
     private ModelMapper modelMapper;
+
+    public BookController() {
+        bookService = new BookServiceImpl();
+    }
 
     @Autowired
     public BookController(BookService bookService) {
@@ -37,7 +43,8 @@ public class BookController {
         System.out.println(book);
         return book;
     }
-    private BookDto convertToDto(Book book){
+
+    private BookDto convertToDto(Book book) {
         BookDto bookDto = modelMapper.map(book, BookDto.class);
         System.out.println(bookDto);
         return bookDto;
@@ -53,20 +60,25 @@ public class BookController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
-//filtracja request params
-//on save action
+
+    @GetMapping("/book")
+    public ResponseEntity<Map<Integer, Book>> getBooksBetweenYears(@RequestParam(name = "start") Optional<Integer> start,
+                                                                   @RequestParam(name = "end") Optional<Integer> end) {
+        return new ResponseEntity<>(bookService.findBookBetweenYears(start, end), HttpStatus.OK);
+    }
+
+    ;
 
     @PostMapping("/book")
     @ResponseStatus(HttpStatus.CREATED)
-    public BookDto addBook(@RequestBody BookDto bookDto) {
+    public ResponseEntity<BookDto> addBook(@RequestBody BookDto bookDto) {
         try {
             Book book = convertToEntity(bookDto);
             Book savedBook = bookService.addBook(book);
-
-            return convertToDto(savedBook);
+            bookDto = convertToDto(savedBook);
+            return new ResponseEntity<>(bookDto, HttpStatus.CREATED);
         } catch (CapacityException e) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST, "Too many books", e);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
     }
@@ -84,10 +96,21 @@ public class BookController {
     }
 
     @GetMapping("/books")
-    public ResponseEntity<List<BookDto>> getAllBooks() {
+    public ResponseEntity<Map<Integer, BookDto>> getAllBooks(@RequestParam(name = "start") Optional<Integer> start,
+                                                             @RequestParam(name = "end") Optional<Integer> end) {
         Map<Integer, Book> books;
-        books =  bookService.findAll();
-        List<BookDto> booksDto = books.entrySet().stream().map(p -> convertToDto(p.getValue())).collect(Collectors.toList());
+
+        if(start.isPresent() || end.isPresent()){
+            books = bookService.findBookBetweenYears(start, end);
+        } else {
+            books = bookService.findAll();
+        }
+        Map<Integer, BookDto> booksDto = new HashMap<>();
+        for(Map.Entry<Integer, Book> entry : books.entrySet()){
+            BookDto bookDto = convertToDto(entry.getValue());
+            booksDto.put(entry.getKey(), bookDto);
+        };
+
         return new ResponseEntity<>(booksDto, HttpStatus.OK);
     }
 

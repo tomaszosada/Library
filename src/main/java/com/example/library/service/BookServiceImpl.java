@@ -4,6 +4,7 @@ import com.example.library.exception.CapacityException;
 import com.example.library.exception.NoBookException;
 import com.example.library.model.Book;
 import com.example.library.repository.BookRepository;
+import com.example.library.repository.BookRepositoryImpl;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,12 +12,19 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
+import java.util.OptionalInt;
 
 @Log4j2
-@Service
+@Service("bookService")
 public class BookServiceImpl implements BookService {
     private final BookRepository repository;
     private int capacity;
+
+    public BookServiceImpl() {
+        repository = new BookRepositoryImpl();
+    }
+
     @Autowired
     public BookServiceImpl(BookRepository bookRepository, @Value("${capacity}") int capacity) {
         bookRepository.addBook(new Book("Title", "Author"));
@@ -28,6 +36,11 @@ public class BookServiceImpl implements BookService {
     @Override
     public Map<Integer, Book> findAll() {
         return repository.findAll();
+    }
+
+    @Override
+    public Map<Integer, Book> findBookBetweenYears(Optional <Integer> startYear, Optional <Integer> endYear) {
+            return repository.findBookBetweenYears(startYear, endYear);
     }
 
     @Override

@@ -17,6 +17,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 class BookRepositoryTests {
     private BookRepository bookRepository;
@@ -24,7 +25,6 @@ class BookRepositoryTests {
     @BeforeEach
     public void setUp() throws CapacityException {
         bookRepository = new BookRepositoryImpl();
-//        ReflectionTestUtils.setField(bookRepository, "capacity", 3);
         String title = "Test book title";
         String author ="No Idea";
         Book book = new Book(title, author);
@@ -38,10 +38,11 @@ class BookRepositoryTests {
         Book bookToAdd = new Book("title", "Author");
         bookToAdd.setYear(2010);
         bookRepository.addBook(bookToAdd);
-        int start = 1990;
-        int end = 2020;
+        Optional<Integer> start = Optional.of(1990);
+        Optional<Integer> end = Optional.of(2000);
         //when
         Map<Integer, Book> books = bookRepository.findBookBetweenYears(start, end);
+        //then
         assertThat(books.containsValue(bookToAdd));
 
     }

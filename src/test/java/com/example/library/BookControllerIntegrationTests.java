@@ -1,14 +1,12 @@
 package com.example.library;
 
-import com.example.library.controller.BookController;
 import com.example.library.model.Book;
-import com.example.library.service.BookService;
+import com.example.library.repository.BookRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -27,24 +25,21 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @AutoConfigureMockMvc
 @SpringBootTest
-class BookControllerTests {
+public class BookControllerIntegrationTests {
     @MockBean
-    BookService bookService;
+    BookRepository bookRepository;
     @Autowired
     MockMvc mockMvc;
 
-
-    Map<Integer, Book> books;
     @Autowired
     ObjectMapper mapper;
+    Map<Integer, Book> books;
 
     @BeforeEach
     public void init() {
         books = new HashMap<>();
         Book book1 = new Book("Title", "Author");
         Book book2 = new Book("Title2", "Author2");
-        book1.setYear(1990);
-        book2.setYear(2010);
         books.put(0, book1);
         books.put(1, book2);
 
@@ -54,13 +49,13 @@ class BookControllerTests {
     @Test
     void getBooksTest() throws Exception {
         //when
-        when(bookService.findAll()).thenReturn(books);
+        when(bookRepository.findAll()).thenReturn(books);
         //then
         this.mockMvc.perform(get("/books"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("0.title", is("Title")))
                 .andExpect(jsonPath("1.title", is("Title2")));
-        verify(bookService, times(1)).findAll();
+        verify(bookRepository, times(1)).findAll();
 
     }
 
@@ -70,12 +65,12 @@ class BookControllerTests {
         //given
         Book book3 = new Book("Title3", "Author3");
         //when
-        when(bookService.addBook(any(Book.class))).then(returnsFirstArg());
+        when(bookRepository.addBook(any(Book.class))).then(returnsFirstArg());
         //then
         this.mockMvc.perform(post("/book").content(mapper.writeValueAsString(book3)).contentType("application/json"))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.title", is("Title3")));
-        verify(bookService, times(1)).addBook(book3);
+        verify(bookRepository, times(1)).addBook(book3);
 
     }
 
@@ -84,10 +79,13 @@ class BookControllerTests {
         //given
         int id = 0;
         //when
-        when(bookService.findBookById(id)).thenReturn(books.get(id));
+        when(bookRepository.findBookById(id)).thenReturn(books.get(id));
+        when(bookRepository.findAll()).thenReturn(books);
         //then
         this.mockMvc.perform(get("/book/" + id)).andExpect(status().isOk()).andExpect(jsonPath("$.title", is("Title")));
-        verify(bookService, times(1)).findBookById(id);
+        verify(bookRepository, times(1)).findBookById(id);
+        verify(bookRepository, times(1)).findAll();
+
 
     }
 
@@ -95,10 +93,13 @@ class BookControllerTests {
     void deleteBookTest() throws Exception {
         //given
         int id = 0;
-        //when delete
+        //when
+        when(bookRepository.findAll()).thenReturn(books);
         //then
         this.mockMvc.perform(delete("/book/" + id)).andExpect(status().isOk());
-        verify(bookService, times(1)).deleteBook(id);
+        verify(bookRepository, times(1)).deleteBook(id);
+        verify(bookRepository, times(1)).findAll();
+
 
     }
 
@@ -109,10 +110,13 @@ class BookControllerTests {
         Optional<Integer> endYear = Optional.of(2020);
         books.remove(0);
         //when
-        when(bookService.findBookBetweenYears(startYear, endYear)).thenReturn(books);
+        when(bookRepository.findBookBetweenYears(startYear, endYear)).thenReturn(books);
         //then
-        this.mockMvc.perform(get("/books?start=" + startYear.get()+"&end="+endYear.get())).andExpect(status().isOk()).andExpect(jsonPath("1.title", is("Title2")));;
-        verify(bookService, times(1)).findBookBetweenYears(startYear, endYear);
+        this.mockMvc.perform(get("/books?start=" + startYear.get() + "&end=" + endYear.get())).andExpect(status().isOk()).
+                andExpect(jsonPath("1.title", is("Title2")));
+
+        verify(bookRepository, times(1)).findBookBetweenYears(startYear, endYear);
 
     }
+
 }

@@ -78,8 +78,6 @@ class LibraryApplicationTests {
 		//then
 		assertThat(bookService.findAll().size()).isEqualTo(len-1);
 	}
-	//find by id
-	//find all
 
 	@Test
 	void findByIdTest() {
