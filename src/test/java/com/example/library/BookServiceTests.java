@@ -2,9 +2,10 @@ package com.example.library;
 
 import com.example.library.exception.CapacityException;
 import com.example.library.exception.NoBookException;
+import com.example.library.model.Author;
 import com.example.library.model.Book;
+import com.example.library.repository.AuthorRepository;
 import com.example.library.repository.BookRepository;
-import com.example.library.repository.BookRepositoryImpl;
 import com.example.library.service.BookService;
 import com.example.library.service.BookServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,19 +34,22 @@ class BookServiceTests {
     @Mock
     private BookRepository bookRepository;
     private BookService bookService;
+    private AuthorRepository authorRepository;
     @BeforeEach
     void setUp() {
-         bookService = new BookServiceImpl(bookRepository, 3);
+         bookService = new BookServiceImpl(bookRepository, authorRepository, 3);
     }
 
     @Test
      void addBookTest() throws CapacityException {
         //given
         String title = "Test title";
-        String author = "Test author";
+        Author author = new Author();
+        author.setLastName("Last");
+        author.setFirstName("First");
         Book book = new Book(title, author);
         //when
-        when(bookRepository.addBook(any(Book.class))).then(returnsFirstArg());
+        when(bookRepository.save(any(Book.class))).then(returnsFirstArg());
         Book savedBook = bookService.addBook(book);
         //then
         assertThat(savedBook).isEqualTo(book);

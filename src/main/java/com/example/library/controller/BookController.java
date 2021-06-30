@@ -15,15 +15,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.time.LocalDate;
+import java.util.*;
 import java.util.stream.Collectors;
 
 //dopisz testy gdzie mockujesz repo a nie service
 @RestController
 public class BookController {
+    @Autowired
     private final BookService bookService;
 
     @Autowired
@@ -49,30 +48,30 @@ public class BookController {
 
     @GetMapping("/book/{id}")
     public ResponseEntity<BookDto> getBookById(@PathVariable(value = "id") int id) {
-        try {
-            Book foundBook = bookService.findBookById(id);
-            return new ResponseEntity<>(convertToDto(foundBook), HttpStatus.OK);
-        } catch (NoBookException e) {
+        Optional<Book> book = bookService.findBookById(id);
+        if(book.isPresent()) {
+            return new ResponseEntity<>(convertToDto(book.get()), HttpStatus.OK);
+        } else {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
-    @GetMapping("/book")
-    public ResponseEntity<Map<Integer, Book>> getBooksBetweenYears(@RequestParam(name = "start") Optional<Integer> start,
-                                                                   @RequestParam(name = "end") Optional<Integer> end) {
-        return new ResponseEntity<>(bookService.findBookBetweenYears(start, end), HttpStatus.OK);
-    }
+//    @GetMapping("/book")
+//    public ResponseEntity<List<Book>> getBooksBetweenYears(@RequestParam(name = "start") Optional<Integer> start,
+//                                                                   @RequestParam(name = "end") Optional<Integer> end) {
+//        return new ResponseEntity<>(bookService.findBookBetweenYears(start, end), HttpStatus.OK);
+//    }
 
     ;
 
     @PostMapping("/book")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<BookDto> addBook(@RequestBody BookDto bookDto) {
+    public ResponseEntity<Book> addBook(@RequestBody Book book) {
         try {
-            Book book = convertToEntity(bookDto);
+//            Book book = convertToEntity(bookDto);
             Book savedBook = bookService.addBook(book);
-            bookDto = convertToDto(savedBook);
-            return new ResponseEntity<>(bookDto, HttpStatus.CREATED);
+//            bookDto = convertToDto(savedBook);
+            return new ResponseEntity<>(savedBook, HttpStatus.CREATED);
         } catch (CapacityException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -82,7 +81,7 @@ public class BookController {
 
     @DeleteMapping("/book/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public void deleteBoook(@PathVariable(value = "id") int id) {
+    public void deleteBook(@PathVariable(value = "id") int id) {
         try {
             bookService.deleteBook(id);
         } catch (NoBookException e) {
@@ -92,22 +91,18 @@ public class BookController {
     }
 
     @GetMapping("/books")
-    public ResponseEntity<Map<Integer, BookDto>> getAllBooks(@RequestParam(name = "start") Optional<Integer> start,
-                                                             @RequestParam(name = "end") Optional<Integer> end) {
-        Map<Integer, Book> books;
+    public ResponseEntity<List< BookDto>> getAllBooks(@RequestParam(name = "start") Optional<String> start,
+                                                             @RequestParam(name = "end") Optional<String> end) {
 
-        if(start.isPresent() || end.isPresent()){
-            books = bookService.findBookBetweenYears(start, end);
-        } else {
-            books = bookService.findAll();
+
+        List<Book> books;
+        books = bookService.findBookBetweenPublicationDates(start, end);
+
+        List<BookDto> bookDtos = new ArrayList<>();
+        for(Book book : books){
+            bookDtos.add(convertToDto(book));
         }
-        Map<Integer, BookDto> booksDto = new HashMap<>();
-        for(Map.Entry<Integer, Book> entry : books.entrySet()){
-            BookDto bookDto = convertToDto(entry.getValue());
-            booksDto.put(entry.getKey(), bookDto);
-        };
-
-        return new ResponseEntity<>(booksDto, HttpStatus.OK);
+        return new ResponseEntity<>(bookDtos, HttpStatus.OK);
     }
 
 }
