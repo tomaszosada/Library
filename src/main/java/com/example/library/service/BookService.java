@@ -1,17 +1,17 @@
 package com.example.library.service;
 
-import com.example.library.exception.CapacityException;
 import com.example.library.model.Book;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.*;
 
 @Service
 public interface BookService {
-    Map<Integer, Book> findAll();
-    Map<Integer, Book> findBookBetweenYears(Optional <Integer> startYear, Optional <Integer> endYear);
+    List<Book> findAll();
+    List<Book> findBookBetweenPublicationDates(Optional <String> startDate, Optional <String> endDate);
     Book addBook(Book book);
-    void deleteBook(int id);
-    Book findBookById(int id);
+    void deleteBook(long id);
+    Optional<Book> findBookById(long id);
     void deleteAllBooks();
 }

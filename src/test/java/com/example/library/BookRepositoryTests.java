@@ -7,7 +7,6 @@ import com.example.library.exception.NoBookException;
 import com.example.library.exception.CapacityException;
 import com.example.library.model.Book;
 import com.example.library.repository.BookRepository;
-import com.example.library.repository.BookRepositoryImpl;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

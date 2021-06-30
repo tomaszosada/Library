@@ -1,5 +1,6 @@
 package com.example.library;
 
+import com.example.library.model.Author;
 import com.example.library.model.Book;
 import com.example.library.repository.BookRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -38,6 +39,9 @@ public class BookControllerIntegrationTests {
     @BeforeEach
     public void init() {
         books = new HashMap<>();
+        Author author = new Author();
+        author.setFirstName("Initaut");
+        author.setLastName("Initlast");
         Book book1 = new Book("Title", "Author");
         Book book2 = new Book("Title2", "Author2");
         books.put(0, book1);
