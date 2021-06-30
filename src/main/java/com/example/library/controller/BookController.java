@@ -19,7 +19,6 @@ import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
-//dopisz testy gdzie mockujesz repo a nie service
 @RestController
 public class BookController {
     @Autowired
@@ -56,21 +55,12 @@ public class BookController {
         }
     }
 
-//    @GetMapping("/book")
-//    public ResponseEntity<List<Book>> getBooksBetweenYears(@RequestParam(name = "start") Optional<Integer> start,
-//                                                                   @RequestParam(name = "end") Optional<Integer> end) {
-//        return new ResponseEntity<>(bookService.findBookBetweenYears(start, end), HttpStatus.OK);
-//    }
-
-    ;
 
     @PostMapping("/book")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<Book> addBook(@RequestBody Book book) {
         try {
-//            Book book = convertToEntity(bookDto);
             Book savedBook = bookService.addBook(book);
-//            bookDto = convertToDto(savedBook);
             return new ResponseEntity<>(savedBook, HttpStatus.CREATED);
         } catch (CapacityException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

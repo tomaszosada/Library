@@ -22,11 +22,4 @@ public interface BookRepository extends JpaRepository<Book, Long> {
     @Query("SELECT b FROM Book b WHERE b.publicationDate < :end")
     List<Book> findAllByPublicationDateLessThanEqual(@Param("end")LocalDate end);
 
-//    Map<Integer, Book> findAll();
-//    Book addBook(Book book);
-//    void deleteBook(int id);
-//    Book findBookById(int id);
-//    Map<Integer, Book> findBookBetweenYears(Optional<Integer> startYear, Optional<Integer> endYear);
-//    void deleteAllBooks();
-
 }
